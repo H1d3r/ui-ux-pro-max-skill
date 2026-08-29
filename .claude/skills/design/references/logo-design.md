@@ -1,13 +1,13 @@
 # Logo Design Reference
 
-AI-powered logo design with 55+ styles, 30 color palettes, 25 industry guides. Gemini Nano Banana is the default provider; MuAPI is also available as an explicit opt-in provider.
+AI-powered logo design with 55+ styles, 30 color palettes, 25 industry guides. Gemini Nano Banana is the default provider; Atlas Cloud and MuAPI are also available as explicit opt-in providers.
 
 ## Scripts
 
 | Script | Purpose |
 |--------|---------|
 | `scripts/logo/search.py` | Search styles, colors, industries; generate design briefs |
-| `scripts/logo/generate.py` | Generate logos with Gemini Nano Banana or MuAPI |
+| `scripts/logo/generate.py` | Generate logos with Gemini Nano Banana, Atlas Cloud, or MuAPI |
 | `scripts/logo/core.py` | BM25 search engine for logo data |
 
 ## Commands

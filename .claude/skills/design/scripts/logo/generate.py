@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
-"""Logo generation with Gemini or MuAPI.
+"""Logo generation with Gemini, Atlas Cloud, or MuAPI.
 
-Gemini remains the default provider. MuAPI is opt-in with
-``--provider muapi`` and uses its asynchronous image generation API with the
-selected model's prompt/aspect-ratio contract.
+Gemini remains the default provider. Atlas Cloud is opt-in with
+``--provider atlas`` and uses its asynchronous image generation API. MuAPI is
+opt-in with ``--provider muapi`` and uses its asynchronous image generation API
+with the selected model's prompt/aspect-ratio contract.
 
 Models:
 - Nano Banana (default): gemini-2.5-flash-image - fast, high-volume, low-latency
 - Nano Banana Pro (--pro): gemini-3-pro-image-preview - professional quality, advanced reasoning
+- MuAPI Nano Banana (--provider muapi): nano-banana - hosted asynchronous image generation
 
 Usage:
     python generate.py --prompt "tech startup logo minimalist blue"
@@ -468,7 +470,7 @@ def generate_logo(
     atlas_model=ATLAS_MODEL,
     muapi_model=MUAPI_MODEL,
 ):
-    """Generate a logo using Gemini or MuAPI image generation.
+    """Generate a logo using Gemini, Atlas Cloud, or MuAPI image generation.
 
     Args:
         aspect_ratio: Image aspect ratio. Options: "1:1", "16:9", "9:16", "4:3", "3:4"
@@ -624,7 +626,7 @@ def generate_batch(
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate logos using Gemini or MuAPI"
+        description="Generate logos using Gemini, Atlas Cloud, or MuAPI"
     )
     parser.add_argument("--prompt", "-p", type=str, help="Logo description prompt")
     parser.add_argument("--brand", "-b", type=str, help="Brand name")
