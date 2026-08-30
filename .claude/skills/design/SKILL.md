@@ -314,9 +314,12 @@ export MUAPI_API_KEY="your-key"
 
 MuAPI uses the asynchronous model endpoint and prediction result API. See the
 [MuAPI API reference](https://muapi.ai/docs/api-reference) for authentication
-and current model contracts. The logo generator currently supports the
-`nano-banana` and `nano-banana-pro` model slugs, and sends only the shared
-`prompt` and `aspect_ratio` fields.
+and the [nano-banana model contract](https://api.muapi.ai/api/v1/models/nano-banana)
+or [nano-banana-pro model contract](https://api.muapi.ai/api/v1/models/nano-banana-pro)
+for the current model-specific schemas. The logo generator supports both documented
+model slugs and sends their shared required `prompt` plus optional `aspect_ratio`
+fields; the Pro model also accepts an optional `resolution` field that this focused
+logo workflow leaves at the provider default.
 
 > **Note for Windows:** Use `python` instead of `pip` where needed (e.g., `python -m pip install ...`).
 

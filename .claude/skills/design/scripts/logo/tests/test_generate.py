@@ -136,12 +136,12 @@ class MuapiGenerationTests(unittest.TestCase):
         self, json_request, sleep, download
     ):
         json_request.side_effect = [
-            {"request_id": "req-123"},
-            {"request_id": "req-123", "status": "processing"},
+            {"id": "req-123", "status": "created"},
+            {"id": "req-123", "status": "processing"},
             {
-                "request_id": "req-123",
+                "id": "req-123",
                 "status": "completed",
-                "outputs": ["https://media.example.com/logo.png"],
+                "output": {"outputs": ["https://media.example.com/logo.png"]},
             },
         ]
 
