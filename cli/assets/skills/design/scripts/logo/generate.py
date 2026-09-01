@@ -334,6 +334,31 @@ def _muapi_error(response):
     return "MuAPI request failed"
 
 
+def _muapi_result_url(response):
+    """Return the documented result URL from the creation response."""
+    for item in _muapi_response_objects(response):
+        urls = item.get("urls")
+        if not isinstance(urls, dict) or "get" not in urls:
+            continue
+
+        result_url = urls.get("get")
+        if not isinstance(result_url, str) or not result_url:
+            raise RuntimeError(
+                "MuAPI creation response did not include a valid HTTPS result URL"
+            )
+        try:
+            _validate_public_https_url(result_url)
+        except ValueError as exc:
+            raise RuntimeError(
+                "MuAPI creation response did not include a valid HTTPS result URL"
+            ) from exc
+        return result_url
+
+    raise RuntimeError(
+        "MuAPI creation response did not include a valid HTTPS result URL"
+    )
+
+
 def _muapi_output_url(response):
     for item in _muapi_response_objects(response):
         outputs = item.get("outputs")
@@ -376,6 +401,7 @@ def _generate_with_muapi(prompt, output_path, aspect_ratio, api_key, model):
     request_id = _muapi_response_value(response, ("request_id", "id"))
     if not isinstance(request_id, str) or not request_id:
         raise RuntimeError("MuAPI did not return a request ID")
+    result_url = _muapi_result_url(response)
 
     data = response
     for poll_number in range(MUAPI_MAX_POLLS + 1):
@@ -397,7 +423,7 @@ def _generate_with_muapi(prompt, output_path, aspect_ratio, api_key, model):
 
         time.sleep(MUAPI_POLL_INTERVAL)
         data = _json_request(
-            f"{MUAPI_API_BASE}/predictions/{request_id}/result",
+            result_url,
             api_key,
             api_key_header="x-api-key",
         )

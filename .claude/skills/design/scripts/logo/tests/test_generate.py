@@ -136,7 +136,15 @@ class MuapiGenerationTests(unittest.TestCase):
         self, json_request, sleep, download
     ):
         json_request.side_effect = [
-            {"id": "req-123", "status": "created"},
+            {
+                "id": "req-123",
+                "status": "created",
+                "output": {
+                    "urls": {
+                        "get": "https://api.muapi.ai/api/v1/results/req-123"
+                    }
+                },
+            },
             {"id": "req-123", "status": "processing"},
             {
                 "id": "req-123",
@@ -164,12 +172,12 @@ class MuapiGenerationTests(unittest.TestCase):
             json_request.call_args_list[1:],
             [
                 call(
-                    f"{logo_generate.MUAPI_API_BASE}/predictions/req-123/result",
+                    "https://api.muapi.ai/api/v1/results/req-123",
                     "muapi-key",
                     api_key_header="x-api-key",
                 ),
                 call(
-                    f"{logo_generate.MUAPI_API_BASE}/predictions/req-123/result",
+                    "https://api.muapi.ai/api/v1/results/req-123",
                     "muapi-key",
                     api_key_header="x-api-key",
                 ),
@@ -233,7 +241,14 @@ class MuapiGenerationTests(unittest.TestCase):
     @patch.object(logo_generate, "_json_request")
     def test_muapi_reports_failed_prediction(self, json_request):
         json_request.side_effect = [
-            {"request_id": "req-123"},
+            {
+                "request_id": "req-123",
+                "output": {
+                    "urls": {
+                        "get": "https://api.muapi.ai/api/v1/results/req-123"
+                    }
+                },
+            },
             {"status": "failed", "error": "invalid prompt"},
         ]
 
@@ -241,6 +256,32 @@ class MuapiGenerationTests(unittest.TestCase):
             logo_generate._generate_with_muapi(
                 "logo prompt", "logo.png", "1:1", "muapi-key", "nano-banana"
             )
+
+    @patch.object(logo_generate, "_json_request")
+    def test_muapi_requires_creation_result_url(self, json_request):
+        json_request.return_value = {"request_id": "req-123", "status": "created"}
+
+        with self.assertRaisesRegex(RuntimeError, "valid HTTPS result URL"):
+            logo_generate._generate_with_muapi(
+                "logo prompt", "logo.png", "1:1", "muapi-key", "nano-banana"
+            )
+
+        json_request.assert_called_once()
+
+    @patch.object(logo_generate, "_json_request")
+    def test_muapi_rejects_invalid_creation_result_url(self, json_request):
+        json_request.return_value = {
+            "request_id": "req-123",
+            "status": "created",
+            "output": {"urls": {"get": "http://api.muapi.ai/results/req-123"}},
+        }
+
+        with self.assertRaisesRegex(RuntimeError, "valid HTTPS result URL"):
+            logo_generate._generate_with_muapi(
+                "logo prompt", "logo.png", "1:1", "muapi-key", "nano-banana"
+            )
+
+        json_request.assert_called_once()
 
 
 if __name__ == "__main__":
